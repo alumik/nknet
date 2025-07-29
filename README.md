@@ -2,7 +2,7 @@
 
 [ENGLISH] | [[中文](README_zh.md)]
 
-![version-2.0.2](https://img.shields.io/badge/version-2.0.2-blue)
+![version-2.1.0](https://img.shields.io/badge/version-2.1.0-blue)
 ![python->=3.6](https://img.shields.io/badge/python->=3.6-blue?logo=python&logoColor=white)
 ![GitHub License](https://img.shields.io/github/license/alumik/nknet)
 

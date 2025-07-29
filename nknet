@@ -13,12 +13,15 @@ import urllib.parse
 
 from typing import Callable
 
-__version__ = '2.0.2'
+__version__ = '2.1.0'
 
 BASE_URL = 'netauth.nankai.edu.cn'
 BASE_PORT = 804
-ROOT = f'https://{BASE_URL}:{BASE_PORT}/eportal/portal/'
+URL_ROOT = f'https://{BASE_URL}:{BASE_PORT}/eportal/portal/'
 TIMEOUT = 3
+LOGIN_CALLBACK = 'dr1001'
+USERNAME_PREFIX = ',`,'
+DEFAULT_ENCODE_KEY = 'drcom'
 
 
 def connectivity_check(
@@ -43,7 +46,7 @@ def compute_key(key: str) -> int:
     return computed_key
 
 
-def encode_string(string: str, key: str = 'drcom') -> str:
+def encode_string(string: str, key: str = DEFAULT_ENCODE_KEY) -> str:
     if not string:
         return ''
     if len(string) > 512:
@@ -57,7 +60,7 @@ def encode_string(string: str, key: str = 'drcom') -> str:
     return output
 
 
-def decode_string(encoded: str, key: str = 'drcom'):
+def decode_string(encoded: str, key: str = DEFAULT_ENCODE_KEY):
     if not encoded:
         return ''
     if len(encoded) % 2 != 0:
@@ -72,7 +75,7 @@ def decode_string(encoded: str, key: str = 'drcom'):
     return decoded
 
 
-def print_status():
+def print_login_account():
     response = requests.get(f'https://{BASE_URL}')
     try:
         username = re.findall(r'uid=\'(.*?)\'', response.text)[0]
@@ -81,97 +84,160 @@ def print_status():
     print(f'Login account: {username}')
 
 
+def get_config_path(args_: argparse.Namespace) -> pathlib.Path:
+    if args_.config is not None:
+        return pathlib.Path(args_.config)
+    return pathlib.Path.home() / '.config' / 'nknet' / 'config.json'
+
+
+def check_config(path: pathlib.Path) -> bool:
+    if not path.exists():
+        return False
+    try:
+        config = json.loads(path.read_text())
+        if set(config.keys()) == {'username', 'password'}:
+            return True
+    except json.JSONDecodeError:
+        return False
+    return False
+
+
 def login(args_: argparse.Namespace):
     def on_success(_):
-        print('Login successful')
-        print_status()
+        print('Login successful.')
+        print_login_account()
 
     def on_error(msg: str):
         print(f'Login failed: {msg}')
 
     if connectivity_check(success=lambda _: True, error=lambda _: False):
         print('The campus network is already authenticated.')
-        if input('Do you want to login again? [y/n]? ').lower() != 'y':
-            print('Exiting...')
+        if input('Do you want to login again? (y/[n])? ').lower() != 'y':
+            print('Aborted.')
             return
 
-    if args_.config is not None:
-        config_path = pathlib.Path(args_.config)
-    else:
-        config_path = pathlib.Path.home() / '.config' / 'nknet' / 'config.json'
-    if config_path.exists() and args_.auto_login:
+    config_path = get_config_path(args_)
+    if check_config(config_path) and args_.auto_login:
         config = json.loads(config_path.read_text())
-        username = config['username']
-        password = config['password']
+        username = decode_string(config['username'])
+        password = decode_string(config['password'])
+        remember_me = False
     else:
-        username = input('username: ')
-        password = getpass.getpass('password: ')
+        username = input('Username: ').strip()
+        password = getpass.getpass('Password: ').strip()
+        remember_me = input('Save credentials? (y/[n])? ').lower() == 'y'
+
     print('Logging in...')
     response = requests.get(
-        urllib.parse.urljoin(ROOT, 'login'),
+        urllib.parse.urljoin(URL_ROOT, 'login'),
         params={
-            'callback': encode_string('dr1001'),
-            'user_account': encode_string(f',`,{username}'),
+            'callback': encode_string(LOGIN_CALLBACK),
+            'user_account': encode_string(f'{USERNAME_PREFIX}{username}'),
             'user_password': encode_string(password),
         },
     )
-    time.sleep(3)
+
+    time.sleep(TIMEOUT)
     connectivity_check(success=on_success, error=on_error, msg=response.text)
-    if not args_.no_save:
+    if remember_me:
         config_path.parent.mkdir(parents=True, exist_ok=True)
-        config_path.write_text(json.dumps({'username': username, 'password': password}))
+        config_path.write_text(json.dumps({
+            'username': encode_string(username),
+            'password': encode_string(password),
+        }))
+        print('Login credentials saved at:', config_path)
+        print('You can use the -a/--auto-login option to login automatically next time.')
 
 
 def logout(_):
     def on_success(_):
-        print('Logout successful')
+        print('Logout successful.')
 
     def on_error(msg: str):
         print(f'Logout failed: {msg}')
 
     print('Logging out...')
-    response = requests.get(urllib.parse.urljoin(ROOT, 'logout'))
-    time.sleep(3)
+    response = requests.get(urllib.parse.urljoin(URL_ROOT, 'logout'))
+    time.sleep(TIMEOUT)
     connectivity_check(success=on_error, error=on_success, msg=response.text)
 
 
-def status(args_: argparse.Namespace):
-    def on_success(_):
+def status(_):
+    def status_online(_):
         print(f'Status: {colorama.Fore.LIGHTGREEN_EX}online{colorama.Fore.RESET}')
-        print_status()
+        print_login_account()
 
-    def on_error(_):
+    def status_offline(_):
         print(f'Status: {colorama.Fore.LIGHTRED_EX}offline{colorama.Fore.RESET}')
 
     print('Detecting network status...')
-    connectivity_check(success=on_success, error=on_error)
+    connectivity_check(success=status_online, error=status_offline)
+
+
+def clear(args_: argparse.Namespace):
+    if check_config(get_config_path(args_)):
+        if input('Are you sure you want to clear the saved login credentials? (y/[n])? ').lower() == 'y':
+            get_config_path(args_).unlink(missing_ok=True)
+            print('Credentials cleared.')
+        else:
+            print('Aborted.')
+    else:
+        print('No saved credentials found.')
 
 
 if __name__ == '__main__':
     colorama.init()
     urllib3.util.connection.HAS_IPV6 = False
     urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
-    parser = argparse.ArgumentParser(
-        description='manage login/logout and check the status of the campus network',
+
+    parser = argparse.ArgumentParser(description='a CLI tool for the Nankai University campus network')
+    parser.add_argument(
+        '-v', '--version',
+        action='version',
+        version=__version__,
     )
     parser.set_defaults(func=lambda _: parser.print_help())
-    parser.add_argument('-v', '--version', action='version', version=__version__)
+
+    parent_parser = argparse.ArgumentParser(add_help=False)
+    parent_parser.add_argument(
+        '-c', '--config',
+        required=False,
+        type=str,
+        help='path to the config file containing login credentials',
+    )
     subparsers = parser.add_subparsers(dest='command', title='commands')
 
-    login_parser = subparsers.add_parser('login', help='login to the campus network')
-    login_parser.add_argument('-c', '--config', required=False, type=str,
-                              help='path to the config file containing login details')
-    login_parser.add_argument('-a', '--auto-login', required=False, action='store_true',
-                              help='automatically login using the credentials from the config file (if available)')
-    login_parser.add_argument('-n', '--no-save', required=False, action='store_true',
-                              help='do not save the username and password to the config file')
+    login_parser = subparsers.add_parser(
+        'login',
+        help='login to the campus network',
+        parents=[parent_parser],
+    )
+    login_parser.add_argument(
+        '-a', '--auto-login',
+        required=False,
+        action='store_true',
+        help='automatically login using the credentials from the config file (if available)',
+    )
     login_parser.set_defaults(func=login)
 
-    logout_parser = subparsers.add_parser('logout', help='logout from the campus network')
+    logout_parser = subparsers.add_parser(
+        'logout',
+        help='logout from the campus network',
+    )
     logout_parser.set_defaults(func=logout)
 
-    status_parser = subparsers.add_parser('status', help='check the status of the campus network')
+    status_parser = subparsers.add_parser(
+        'status',
+        help='check the status of the campus network',
+    )
     status_parser.set_defaults(func=status)
+
+    clear_parser = subparsers.add_parser(
+        'clear',
+        help='clear the saved login credentials',
+        parents=[parent_parser],
+    )
+    clear_parser.set_defaults(func=clear)
 
     args = parser.parse_args()
     args.func(args)
