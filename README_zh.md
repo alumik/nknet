@@ -1,10 +1,10 @@
 # NKNet 🌐 - 南开大学校园网命令行工具
 
+[[ENGLISH](README.md)] | [中文]
+
 ![version-2.0.2](https://img.shields.io/badge/version-2.0.2-blue)
 ![python->=3.6](https://img.shields.io/badge/python->=3.6-blue?logo=python&logoColor=white)
 ![GitHub License](https://img.shields.io/github/license/alumik/nknet)
-
-[[ENGLISH](README.md)] | [中文]
 
 一个简单的南开大学校园网认证管理命令行工具。
 通过自动凭据管理和状态检查，简化您的网络登录/注销流程。
