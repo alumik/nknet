@@ -1,6 +1,6 @@
 # NKNet 🌐 - Nankai University Campus Network CLI Tool (南开大学校园网命令行工具)
 
-![version-2.0.1](https://img.shields.io/badge/version-2.0.1-blue)
+![version-2.0.2](https://img.shields.io/badge/version-2.0.2-blue)
 ![python->=3.6](https://img.shields.io/badge/python->=3.6-blue?logo=python&logoColor=white)
 ![GitHub License](https://img.shields.io/github/license/alumik/nknet)
 
@@ -9,7 +9,7 @@ Streamline your network login/logout process with automatic credential managemen
 
 ## ✨ Features
 
-- 🔐 **Secure Authentication** - Login and logout from campus network seamlessly
+- 🔐 **Secure Authentication** - Login and logout from campus network
 - 💾 **Credential Management** - Automatic saving and loading of login credentials
 - 📊 **Network Status** - Real-time network connectivity checking with colored output
 - ⚡ **Fast & Lightweight** - Minimal dependencies, maximum efficiency
@@ -93,26 +93,9 @@ nknet logout
 
 Safely logs out from the campus network authentication system.
 
-## 🛠️ Requirements
-
-- **Python 3.6+**
-- **Dependencies:**
-  - `requests` - HTTP library for network requests
-  - `colorama` - Cross-platform colored terminal output
-  - `urllib3` - HTTP client library
-
-## 🏗️ How It Works
-
-NKNet communicates with Nankai University's network authentication portal (`netauth.nankai.edu.cn:804`) using:
-
-1. **String Encoding/Decoding** - Custom XOR-based encoding for secure parameter transmission
-2. **Connectivity Testing** - Validates Internet access by testing external connections
-3. **Status Monitoring** - Extracts and displays current login information
-
 ## 🔒 Security Notes
 
 - Passwords are stored locally in plain text - ensure proper file permissions
-- HTTPS verification is disabled for campus portal compatibility
 
 ## 🤝 Contributing
 
@@ -120,7 +103,7 @@ Contributions are welcome! Please feel free to submit a Pull Request. For major 
 
 ## 📝 License
 
-This project is licensed under the MIT License - see the [LICENSE](https://img.shields.io/github/license/alumik/nknet) file for details.
+This project is licensed under the MIT License - see the [LICENSE](LICENSE.md) file for details.
 
 ## 🐛 Issues & Support
 
@@ -129,11 +112,6 @@ If you encounter any issues or have questions:
 1. Check existing [Issues](https://github.com/yourusername/nknet/issues)
 2. Create a new issue with detailed information
 3. Include your Python version and operating system
-
-## 📈 Changelog
-
-### v2.0.1
-- Fixed login/logout issues with updated campus portal.
 
 ---
 
