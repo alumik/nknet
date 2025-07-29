@@ -6,8 +6,7 @@
 ![python->=3.6](https://img.shields.io/badge/python->=3.6-blue?logo=python&logoColor=white)
 ![GitHub License](https://img.shields.io/github/license/alumik/nknet)
 
-A simple and elegant command-line tool for managing campus network authentication at Nankai University.
-Streamline your network login/logout process with automatic credential management and status checking.
+A simple and elegant command-line tool for managing campus network authentication at Nankai University. Streamline your network login/logout process with automatic credential management and status checking.
 
 ## ✨ Features
 
@@ -46,6 +45,9 @@ nknet logout
 
 # Auto-login with saved credentials
 nknet login --auto-login
+
+# Clear saved credentials
+nknet clear
 ```
 
 ## 📋 Commands
@@ -59,7 +61,6 @@ nknet login [OPTIONS]
 **Options:**
 - `-c, --config PATH` - Specify custom config file path
 - `-a, --auto-login` - Use saved credentials for automatic login
-- `-n, --no-save` - Don't save credentials to config file
 
 **Examples:**
 ```bash
@@ -68,9 +69,6 @@ nknet login
 
 # Auto-login with saved credentials
 nknet login --auto-login
-
-# Login without saving credentials
-nknet login --no-save
 
 # Use custom config file
 nknet login --config /path/to/config.json
@@ -93,11 +91,18 @@ Displays current network connectivity status with:
 nknet logout
 ```
 
-Safely logs out from the campus network authentication system.
+### `clear` - Clear Saved Credentials
+
+```bash
+nknet clear [OPTIONS]
+```
+
+**Options:**
+- `-c, --config PATH` - Specify custom config file path
 
 ## 🔒 Security Notes
 
-- Passwords are stored locally in plain text - ensure proper file permissions
+Passwords are stored locally in simple encoded strings - ensure proper file permissions.
 
 ## 🤝 Contributing
 

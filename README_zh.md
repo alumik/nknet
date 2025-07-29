@@ -6,14 +6,13 @@
 ![python->=3.6](https://img.shields.io/badge/python->=3.6-blue?logo=python&logoColor=white)
 ![GitHub License](https://img.shields.io/github/license/alumik/nknet)
 
-一个简单的南开大学校园网认证管理命令行工具。
-通过自动凭据管理和状态检查，简化您的网络登录/注销流程。
+一个简单的南开大学校园网认证管理命令行工具。通过自动凭据管理和状态检查，简化您的网络登录/注销流程。
 
 ## ✨ 功能特性
 
 - 🔐 **安全认证** - 登录和注销校园网
 - 💾 **凭据管理** - 自动保存和加载登录凭据
-- 📊 **网络状态** - 实时网络连接检查，带彩色输出
+- 📊 **网络状态** - 实时网络连接检查，彩色输出
 - ⚡ **快速轻量** - 最少依赖，最高效率
 
 ## 🚀 快速开始
@@ -46,6 +45,9 @@ nknet logout
 
 # 使用保存的凭据自动登录
 nknet login --auto-login
+
+# 清除保存的凭据
+nknet clear
 ```
 
 ## 📋 命令说明
@@ -59,7 +61,6 @@ nknet login [选项]
 **选项：**
 - `-c, --config PATH` - 指定自定义配置文件路径
 - `-a, --auto-login` - 使用保存的凭据自动登录
-- `-n, --no-save` - 不将凭据保存到配置文件
 
 **示例：**
 ```bash
@@ -68,9 +69,6 @@ nknet login
 
 # 使用保存的凭据自动登录
 nknet login --auto-login
-
-# 登录但不保存凭据
-nknet login --no-save
 
 # 使用自定义配置文件
 nknet login --config /path/to/config.json
@@ -93,9 +91,18 @@ nknet status
 nknet logout
 ```
 
+### `clear` - 清除保存的凭据
+
+```bash
+nknet clear [选项]
+```
+
+**选项：**
+- `-c, --config PATH` - 指定自定义配置文件路径
+
 ## 🔒 安全提示
 
-- 密码以明文形式存储在本地 - 请确保适当的文件权限设置
+密码以简单加密形式存储在本地 - 请确保适当的文件权限设置。
 
 ## 🤝 贡献
 
