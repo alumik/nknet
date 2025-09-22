@@ -25,7 +25,7 @@ git clone https://github.com/AlumiK/nknet.git
 cd nknet
 
 # Make executable (Linux/macOS)
-chmod +x nknet.py
+chmod +x nknet
 
 # Install dependencies
 pip install -r requirements.txt

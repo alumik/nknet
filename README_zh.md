@@ -25,7 +25,7 @@ git clone https://github.com/AlumiK/nknet.git
 cd nknet
 
 # 设置可执行权限 (Linux/macOS)
-chmod +x nknet.py
+chmod +x nknet
 
 # 安装依赖
 pip install -r requirements.txt
