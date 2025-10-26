@@ -13,13 +13,13 @@ import urllib.parse
 
 from typing import Callable
 
-__version__ = '2.1.0'
+__version__ = '2.2.0'
 
 BASE_URL = 'netauth.nankai.edu.cn'
 BASE_PORT = 804
 URL_ROOT = f'https://{BASE_URL}:{BASE_PORT}/eportal/portal/'
 TIMEOUT = 3
-LOGIN_CALLBACK = 'dr1001'
+LOGIN_CALLBACK = 'dr1004'
 USERNAME_PREFIX = ',`,'
 DEFAULT_ENCODE_KEY = 'drcom'
 
@@ -238,6 +238,34 @@ if __name__ == '__main__':
         parents=[parent_parser],
     )
     clear_parser.set_defaults(func=clear)
+
+    debug_parser = subparsers.add_parser(
+        'debug',
+        help='debug encoding and decoding functions',
+        parents=[parent_parser],
+    )
+    debug_parser.set_defaults(func=lambda _: debug_parser.print_help())
+    debug_subparsers = debug_parser.add_subparsers(dest='debug_command', title='debug commands')
+    encode_parser = debug_subparsers.add_parser(
+        'encode',
+        help='encode a string',
+    )
+    encode_parser.add_argument(
+        'string',
+        type=str,
+        help='the string to encode',
+    )
+    encode_parser.set_defaults(func=lambda args_: print(encode_string(args_.string)))
+    decode_parser = debug_subparsers.add_parser(
+        'decode',
+        help='decode a string',
+    )
+    decode_parser.add_argument(
+        'string',
+        type=str,
+        help='the string to decode',
+    )
+    decode_parser.set_defaults(func=lambda args_: print(decode_string(args_.string)))
 
     args = parser.parse_args()
     args.func(args)
