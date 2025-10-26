@@ -33,6 +33,8 @@ pip install -r requirements.txt
 
 ### 基本用法
 
+在Linux/macOS上，在终端运行以下命令：
+
 ```bash
 # 登录校园网
 nknet login
@@ -49,6 +51,8 @@ nknet login --auto-login
 # 清除保存的凭据
 nknet clear
 ```
+
+在Windows上，使用 `python nknet` 替代 `nknet`。
 
 ## 📋 命令说明
 

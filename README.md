@@ -33,6 +33,8 @@ pip install -r requirements.txt
 
 ### Basic Usage
 
+On Linux/macOS, run the following commands in your terminal:
+
 ```bash
 # Login to campus network
 nknet login
@@ -49,6 +51,8 @@ nknet login --auto-login
 # Clear saved credentials
 nknet clear
 ```
+
+On Windows, use `python nknet` instead of `nknet`.
 
 ## 📋 Commands
 
